@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>Login Form</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js"></script>
+</head>
+<body>
+
+    <div class="login-container">
+        <div class="logo">
+            <h2 > <a href="../cubikpage.html">Tracker<b style="color: red;"> X</b></a></h2>
+        </div>
+
+        <div class="account-type">
+       
+            <p class="account-type-text">Choose Account Type</p>
+            <div style="display: flex; flex-direction: column;">
+            <div class="icon" onclick="selectAccount('agent')">
+                <label for="agentCheckbox" class="icon agent-logo">
+                  
+                    <h1 class="fa-solid fa-business-time " style="border-radius: 8px; border: 2px solid white; padding: 4px;"></h1>
+                    <div class="checkmark"></div>
+                    
+                
+                </label>
+            </div>
+            <span style="margin-top: 0;">Business</span>
+            </div>
+            <div style="display: flex; flex-direction: column;">
+            <div class="icon" onclick="selectAccount('player')">
+                <label for="playerCheckbox" class="icon player-logo">
+                
+                    <h1 class="fa-solid fa-user-tie" style="border-radius: 8px; border: 2px solid white; padding: 4px;"></h1>
+                    <div class="checkmark"></div>
+                   
+                </label>
+            </div>
+            <span style="margin-top: 0;">Student</span>
+        </div>
+
+        </div>
+
+        <div class="input-container">
+            <input type="text" id="username" placeholder=" ">
+            <label for="username">Username</label>
+        </div>
+
+        <div class="input-container">
+            <input type="password" id="password" placeholder=" ">
+            <label for="password">Password</label>
+            <div class="show-password" onclick="togglePasswordVisibility()">👁</div>
+        </div>
+
+        <div class="remember-forgot">
+            <div class="remember-me">
+                <input type="checkbox" id="remember"> Remember me
+            </div>
+            <div class="forgot-password">Forgot Password?</div>
+        </div>
+
+        <button class="login-button" onclick="login()">Login</button>
+
+        <div class="signup-link">
+            <p>Don't have an account? <a href="../signup/signup.html" class="signup-button" style="color:red; font-weight:bold;">Sign Up</a></p>
+        </div>
+
+        <div class="social-login">
+            <p>Sign in with:</p>
+            <div class="social-icons">
+                <div class="social-icon">
+                    <img src="https://cdn4.iconfinder.com/data/icons/social-media-and-logos-11/32/Logo_Google-512.png" alt="Google Logo" class="img-fluid square-logo logo-img">
+                </div>
+                <div class="social-icon">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRs-9BYjA24g8-jhWfxvncwJ26rh764wu2Fqw&usqp=CAU" alt="Facebook Logo" class="img-fluid square-logo logo-img">
+                </div>
+                <div class="social-icon">
+                    <img src="https://cdn2.iconfinder.com/data/icons/popular-social-media-flat/48/Popular_Social_Media-10-512.png" alt="Twitter Logo" class="img-fluid square-logo logo-img">
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
