@@ -1,9 +1,10 @@
 "use client";
-import { useState, useEffect } from 'react';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { useState, useEffect } from "react";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
 
 interface Transaction {
-  type: 'income' | 'expense';
+  type: "income" | "expense";
   description: string;
   amount: number;
 }
@@ -11,18 +12,31 @@ interface Transaction {
 const Dashboard = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [userData, setUserData] = useState<any>({});
 
   useEffect(() => {
     // Load transactions from sessionStorage when the component mounts
-    const storedTransactions = sessionStorage.getItem('transactions');
-    if (storedTransactions) {
-      setTransactions(JSON.parse(storedTransactions));
+    if (typeof window !== "undefined") {
+      const storedTransactions = sessionStorage.getItem("transactions");
+      if (storedTransactions) {
+        setTransactions(JSON.parse(storedTransactions));
+      }
+
+      // Safely parse userData from localStorage
+      try {
+        const storedUserData = localStorage.getItem("userData");
+        if (storedUserData) {
+          setUserData(JSON.parse(storedUserData));
+        }
+      } catch (error) {
+        console.error("Error parsing userData from localStorage:", error);
+      }
     }
   }, []);
 
   useEffect(() => {
     // Save transactions to sessionStorage whenever they change
-    sessionStorage.setItem('transactions', JSON.stringify(transactions));
+    sessionStorage.setItem("transactions", JSON.stringify(transactions));
   }, [transactions]);
 
   const addTransaction = (transaction: Transaction) => {
@@ -34,48 +48,56 @@ const Dashboard = () => {
   };
 
   const updateTransaction = (index: number, updatedTransaction: Transaction) => {
-    setTransactions(transactions.map((transaction, i) => (i === index ? updatedTransaction : transaction)));
+    setTransactions(
+      transactions.map((transaction, i) =>
+        i === index ? updatedTransaction : transaction
+      )
+    );
     setEditingIndex(null); // Exit edit mode after update
   };
 
-  const userData = JSON.parse(localStorage.getItem('userData') || '');
-
-
-
   const totalIncome = transactions
-    .filter(transaction => transaction.type === 'income')
+    .filter((transaction) => transaction.type === "income")
     .reduce((total, item) => total + item.amount, 0);
   const totalExpenses = transactions
-    .filter(transaction => transaction.type === 'expense')
+    .filter((transaction) => transaction.type === "expense")
     .reduce((total, item) => total + item.amount, 0);
   const profitLoss = totalIncome - totalExpenses;
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-gray-200 py-12 px-4">
       <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-4xl">
-      <div className='flex justify-around gap-2'>
-        <span className=" text-3xl font-semibold mb-6 text-center pb-4">
-          Welcome {userData.data.user.name}, start tracking your money
+        <div className="flex justify-around gap-2">
+          <span className="text-3xl font-semibold mb-6 text-center pb-4">
+            Welcome {userData?.data?.user?.name || "User"}, start tracking your
+            money
           </span>
-        <div className="flex justify-center">
-          <img
-            src={userData.data.user.avatar}
-            alt="User Avatar"
-            className="w-16 h-16 rounded-full  border-gray-300 shadow-md"
-          />
+          <div className="flex justify-center">
+            <img
+              src={userData?.data?.user?.avatar || ""}
+              alt="User Avatar"
+              className="w-16 h-16 rounded-full border-gray-300 shadow-md"
+            />
+          </div>
         </div>
-        </div>
-        
 
         <div className="mb-8 p-6 bg-gray-700 rounded-lg shadow-md">
-          <h2 className="text-2xl font-medium mb-4">{editingIndex !== null ? 'Edit Transaction' : 'Add Transaction'}</h2>
+          <h2 className="text-2xl font-medium mb-4">
+            {editingIndex !== null ? "Edit Transaction" : "Add Transaction"}
+          </h2>
           <Formik
             initialValues={
               editingIndex !== null
                 ? transactions[editingIndex]
-                : { type: 'income', description: '', amount: 0 }
+                : { type: "income", description: "", amount: 0 }
             }
             enableReinitialize
+            validationSchema={Yup.object({
+              description: Yup.string().required("Description is required"),
+              amount: Yup.number()
+                .min(1, "Amount must be greater than 0")
+                .required("Amount is required"),
+            })}
             onSubmit={(values, { resetForm }) => {
               if (editingIndex !== null) {
                 updateTransaction(editingIndex, values as Transaction);
@@ -88,7 +110,10 @@ const Dashboard = () => {
             {({ isSubmitting }) => (
               <Form>
                 <div className="mb-4">
-                  <label className="block text-gray-300 text-sm font-medium mb-2" htmlFor="type">
+                  <label
+                    className="block text-gray-300 text-sm font-medium mb-2"
+                    htmlFor="type"
+                  >
                     Type
                   </label>
                   <Field
@@ -102,7 +127,10 @@ const Dashboard = () => {
                   </Field>
                 </div>
                 <div className="mb-4">
-                  <label className="block text-gray-300 text-sm font-medium mb-2" htmlFor="description">
+                  <label
+                    className="block text-gray-300 text-sm font-medium mb-2"
+                    htmlFor="description"
+                  >
                     Description
                   </label>
                   <Field
@@ -111,10 +139,17 @@ const Dashboard = () => {
                     className="block w-full px-3 py-2 border border-gray-600 bg-gray-900 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     type="text"
                   />
-                  <ErrorMessage name="description" component="div" className="text-red-500 text-xs italic mt-1" />
+                  <ErrorMessage
+                    name="description"
+                    component="div"
+                    className="text-red-500 text-xs italic mt-1"
+                  />
                 </div>
                 <div className="mb-6">
-                  <label className="block text-gray-300 text-sm font-medium mb-2" htmlFor="amount">
+                  <label
+                    className="block text-gray-300 text-sm font-medium mb-2"
+                    htmlFor="amount"
+                  >
                     Amount
                   </label>
                   <Field
@@ -123,14 +158,18 @@ const Dashboard = () => {
                     className="block w-full px-3 py-2 border border-gray-600 bg-gray-900 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     type="number"
                   />
-                  <ErrorMessage name="amount" component="div" className="text-red-500 text-xs italic mt-1" />
+                  <ErrorMessage
+                    name="amount"
+                    component="div"
+                    className="text-red-500 text-xs italic mt-1"
+                  />
                 </div>
                 <button
                   className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200"
                   type="submit"
                   disabled={isSubmitting}
                 >
-                  {editingIndex !== null ? 'Update Transaction' : 'Add Transaction'}
+                  {editingIndex !== null ? "Update Transaction" : "Add Transaction"}
                 </button>
               </Form>
             )}
@@ -149,27 +188,38 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {transactions.map((transaction, index) => (
-                <tr key={index} className="border-b border-gray-600">
-                  <td className="px-4 py-2">{transaction.type}</td>
-                  <td className="px-4 py-2">{transaction.description}</td>
-                  <td className="px-4 py-2">${transaction.amount}</td>
-                  <td className="px-4 py-2">
-                    <button
-                      className="text-blue-400 hover:underline mr-4"
-                      onClick={() => setEditingIndex(index)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="text-red-400 hover:underline"
-                      onClick={() => removeTransaction(index)}
-                    >
-                      Delete
-                    </button>
+              {transactions.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={4}
+                    className="text-center py-4 text-gray-400 italic"
+                  >
+                    No transactions found.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                transactions.map((transaction, index) => (
+                  <tr key={index} className="border-b border-gray-600">
+                    <td className="px-4 py-2">{transaction.type}</td>
+                    <td className="px-4 py-2">{transaction.description}</td>
+                    <td className="px-4 py-2">${transaction.amount}</td>
+                    <td className="px-4 py-2">
+                      <button
+                        className="text-blue-400 hover:underline mr-4"
+                        onClick={() => setEditingIndex(index)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="text-red-400 hover:underline"
+                        onClick={() => removeTransaction(index)}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
@@ -177,9 +227,24 @@ const Dashboard = () => {
         <div className="p-6 bg-gray-700 rounded-lg shadow-md text-center">
           <h2 className="text-2xl font-medium mb-4">Summary</h2>
           <div className="flex justify-between text-lg">
-            <p className="flex-1">Total Income: <span className="font-semibold">${totalIncome}</span></p>
-            <p className="flex-1">Total Expenses: <span className="font-semibold">${totalExpenses}</span></p>
-            <p className="flex-1">Profit/Loss: <span className={`font-semibold ${profitLoss >= 0 ? 'text-green-400' : 'text-red-400'}`}>${profitLoss}</span></p>
+            <p className="flex-1">
+              Total Income:{" "}
+              <span className="font-semibold">${totalIncome}</span>
+            </p>
+            <p className="flex-1">
+              Total Expenses:{" "}
+              <span className="font-semibold">${totalExpenses}</span>
+            </p>
+            <p className="flex-1">
+              Profit/Loss:{" "}
+              <span
+                className={`font-semibold ${
+                  profitLoss >= 0 ? "text-green-400" : "text-red-400"
+                }`}
+              >
+                ${profitLoss}
+              </span>
+            </p>
           </div>
         </div>
       </div>

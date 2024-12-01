@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation';
 import { FcGoogle } from 'react-icons/fc';
 import { FaLinkedin, FaGithub } from 'react-icons/fa';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
-import { headers } from 'next/headers';
 import axios from 'axios'
 
 const LoginPage = () => {
