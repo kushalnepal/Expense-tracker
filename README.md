@@ -23,12 +23,13 @@ This is a Next.js-based Expense Tracker application with CRUD functionality for 
 ## Project Structure
 
 ```
-/components   # Reusable React components
-/pages        # Next.js pages (Landing, Login, Dashboard, etc.)
-/public       # Static assets (images, icons, etc.)
-/styles       # CSS/SCSS or Tailwind CSS styles
-/utils        # Helper functions and utilities
-/api          # Backend API routes
+/app
+├── /auth          # Authentication pages
+│   ├── /login     # Login page
+│   ├── /signup    # Signup page
+├── /api           # API routes for backend integration
+├── /dashboard     # Dashboard page for expense tracking
+
 ```
 
 ---
@@ -45,7 +46,7 @@ This is a Next.js-based Expense Tracker application with CRUD functionality for 
 
 1. **Clone the repository**:  
    ```bash
-   git clone https://github.com/yourusername/expense-tracker.git
+   git clone https://github.com/yourusername/Expense-tracker.git
    cd expense-tracker
    ```
 
