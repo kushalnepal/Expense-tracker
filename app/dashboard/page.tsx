@@ -39,7 +39,6 @@ const Dashboard = () => {
   };
 
   const userData = JSON.parse(localStorage.getItem('userData') || '');
-  console.log(userData);
 
 
 
