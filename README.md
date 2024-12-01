@@ -1,36 +1,109 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+
+# Expense Tracker with Node.js API and Next.js
+
+This is a Next.js-based Expense Tracker application with CRUD functionality for managing expenses. The app includes an informative landing page, a login system with a signup option, and a dashboard for recording and analyzing expenses. The backend is powered by a Node.js API.
+
+---
+
+## Features
+
+- **Landing Page**:  
+  A user-friendly, informative landing page with a **Login button** in the top-right corner.
+
+- **User Authentication**:  
+  - Login and Signup functionality.
+  - Seamless navigation from the landing page to the dashboard upon successful login.
+
+- **Expense Dashboard**:  
+  - Manage expenses with CRUD operations (Create, Read, Update, Delete).  
+  - Record incomes and expenses, and view a **profit/loss summary**.
+
+---
+
+## Project Structure
+
+```
+/components   # Reusable React components
+/pages        # Next.js pages (Landing, Login, Dashboard, etc.)
+/public       # Static assets (images, icons, etc.)
+/styles       # CSS/SCSS or Tailwind CSS styles
+/utils        # Helper functions and utilities
+/api          # Backend API routes
+```
+
+---
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Node.js**: v16 or later  
+- **npm**: v8 or later  
+- **MongoDB**: For data storage
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Installation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Clone the repository**:  
+   ```bash
+   git clone https://github.com/yourusername/expense-tracker.git
+   cd expense-tracker
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+2. **Install dependencies**:  
+   ```bash
+   npm install
+   ```
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+4. **Start the application**:  
+   Run both the frontend and backend servers.  
+   - Frontend:  
+     ```bash
+     npm run dev
+     ```
+ 
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+   The app will be available at `https://expense-tracker-29e8jeyz4-kushalnepals-projects.vercel.app/`.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Usage
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+### Landing Page  
+Explore the landing page and click the **Login** button in the top-right corner.
+
+### Authentication  
+- **Sign Up**: Create a new account.  
+- **Login**: Use your credentials to access the dashboard.  
+
+### Dashboard  
+- Add, edit, and delete expense records.  
+- Track income and expenses, and view profit/loss summaries.
+
+---
+
+## Tech Stack
+
+### Frontend
+- **Framework**: Next.js  
+- **Styling**: Tailwind CSS  
+
+### Backend
+- **Runtime**: Node.js  
+- **Database**: MongoDB  
+- **Authentication**: JWT  
+
+---
+
+## Screenshots
+
+### Landing Page  
+![Screenshot 2024-08-26 081812](https://github.com/user-attachments/assets/cdfea07b-6cfe-48fe-a068-9a176f685dc0)
+
+### Login Page  
+![sad2 login page](https://github.com/user-attachments/assets/550ecb50-8263-45e6-b6cb-21f11bdf2ecd)
+
+### Dashboard  
+![Screenshot 2024-08-26 081156](https://github.com/user-attachments/assets/a8bd042f-d4b6-491b-b264-87a56e7618f9)
+
