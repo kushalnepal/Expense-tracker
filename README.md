@@ -22,7 +22,8 @@ This is a Next.js-based Expense Tracker application with CRUD functionality for 
 ## Screenshots
 
 ### Landing Page  
-![Screenshot 2024-08-26 081812](https://github.com/user-attachments/assets/cdfea07b-6cfe-48fe-a068-9a176f685dc0)
+![Screenshot 2024-08-26 081835](https://github.com/user-attachments/assets/b654b8a9-4d9c-4a57-aa91-9d43946f599b)
+
 
 ### Login Page  
 ![loggin](https://github.com/user-attachments/assets/0b38fac7-4931-4285-a9ac-0b3e16c96964)
