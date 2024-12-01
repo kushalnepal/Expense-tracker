@@ -13,7 +13,6 @@ const LoginPage = () => {
   const handleSubmit =async (values: { email: string; password: string }) => {
     try {
       const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
-      console.log(values)
       
      const response = await axios.post('https://lms-backend.sachetsubedi001.com.np/api/auth/login',values);
     //  console.log(response.data);

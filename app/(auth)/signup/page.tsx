@@ -6,18 +6,18 @@ import { useRouter } from 'next/navigation';
 const SignupPage = () => {
   const router = useRouter();
 
-  const handleSubmit =async (values: { email: string; password: string }) => {
+  const handleSubmit = async (values: { name: string; email: string; password: string }) => {
     try {
 
-      const response = await axios.post('https://lms-backend.sachetsubedi001.com.np/api/auth/register',values);
-      console.log("response data >>",response.data);
- 
+      const response = await axios.post('https://lms-backend.sachetsubedi001.com.np/api/auth/register', values);
+      console.log("response data >>", response.data);
+
       if (response.data.email === values.email) {
         alert('User already exists');
         return;
       }
 
-      localStorage.setItem('userData',JSON.stringify(response.data));
+      localStorage.setItem('userData', JSON.stringify(response.data));
       router.push('/login');
     } catch (error) {
       console.error(error);
@@ -29,11 +29,23 @@ const SignupPage = () => {
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
         <h1 className="text-2xl font-semibold mb-6 text-center">Sign Up</h1>
         <Formik
-          initialValues={{ email: '', password: '' }}
+          initialValues={{ name: '', email: '', password: '' }}
           onSubmit={handleSubmit}
         >
           {({ isSubmitting }) => (
             <Form>
+
+              <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-medium mb-2" htmlFor="name">
+                  Name
+                </label>
+                <Field
+                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  type="name"
+                  name="name"
+                />
+                <ErrorMessage className="text-red-500 text-xs italic mt-1" name="name" component="div" />
+              </div>
               <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-medium mb-2" htmlFor="email">
                   Email
