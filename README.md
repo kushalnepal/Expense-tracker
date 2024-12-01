@@ -19,6 +19,17 @@ This is a Next.js-based Expense Tracker application with CRUD functionality for 
   - Record incomes and expenses, and view a **profit/loss summary**.
 
 ---
+## Screenshots
+
+### Landing Page  
+![Screenshot 2024-08-26 081812](https://github.com/user-attachments/assets/cdfea07b-6cfe-48fe-a068-9a176f685dc0)
+
+### Login Page  
+![sad2 login page](https://github.com/user-attachments/assets/550ecb50-8263-45e6-b6cb-21f11bdf2ecd)
+
+### Dashboard  
+![Screenshot 2024-08-26 081156](https://github.com/user-attachments/assets/a8bd042f-d4b6-491b-b264-87a56e7618f9)
+
 
 ## Project Structure
 
@@ -96,15 +107,4 @@ Explore the landing page and click the **Login** button in the top-right corner.
 - **Authentication**: JWT  
 
 ---
-
-## Screenshots
-
-### Landing Page  
-![Screenshot 2024-08-26 081812](https://github.com/user-attachments/assets/cdfea07b-6cfe-48fe-a068-9a176f685dc0)
-
-### Login Page  
-![sad2 login page](https://github.com/user-attachments/assets/550ecb50-8263-45e6-b6cb-21f11bdf2ecd)
-
-### Dashboard  
-![Screenshot 2024-08-26 081156](https://github.com/user-attachments/assets/a8bd042f-d4b6-491b-b264-87a56e7618f9)
 
