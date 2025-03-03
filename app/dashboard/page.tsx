@@ -1,251 +1,260 @@
 "use client";
-import { useState, useEffect } from "react";
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import {
+  BarElement,
+  CategoryScale,
+  Chart as ChartJS,
+  Legend,
+  LinearScale,
+  LineElement,
+  PointElement,
+  Tooltip,
+} from "chart.js";
+import { Form, Formik } from "formik";
+import { useEffect, useState } from "react";
+import { Bar } from "react-chartjs-2";
 import * as Yup from "yup";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  PointElement,
+  Tooltip,
+  Legend
+);
 
 interface Transaction {
   type: "income" | "expense";
   description: string;
   amount: number;
+  date: string;
 }
 
 const Dashboard = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [userData, setUserData] = useState<any>({});
+  const [filter, setFilter] = useState<string>("all");
+  const [search, setSearch] = useState<string>("");
 
   useEffect(() => {
-    // Load transactions from sessionStorage when the component mounts
     if (typeof window !== "undefined") {
-      const storedTransactions = sessionStorage.getItem("transactions");
-      if (storedTransactions) {
-        setTransactions(JSON.parse(storedTransactions));
-      }
-
-      // Safely parse userData from localStorage
-      try {
-        const storedUserData = localStorage.getItem("userData");
-        if (storedUserData) {
-          setUserData(JSON.parse(storedUserData));
-        }
-      } catch (error) {
-        console.error("Error parsing userData from localStorage:", error);
-      }
+      const storedTransactions = localStorage.getItem("transactions");
+      if (storedTransactions) setTransactions(JSON.parse(storedTransactions));
     }
   }, []);
 
   useEffect(() => {
-    // Save transactions to sessionStorage whenever they change
-    sessionStorage.setItem("transactions", JSON.stringify(transactions));
+    localStorage.setItem("transactions", JSON.stringify(transactions));
   }, [transactions]);
 
   const addTransaction = (transaction: Transaction) => {
-    setTransactions([...transactions, transaction]);
+    setTransactions((prev) => [...prev, transaction]);
+  };
+
+  const updateTransaction = (
+    index: number,
+    updatedTransaction: Transaction
+  ) => {
+    setTransactions((prev) =>
+      prev.map((t, i) => (i === index ? updatedTransaction : t))
+    );
+    setEditingIndex(null);
   };
 
   const removeTransaction = (index: number) => {
-    setTransactions(transactions.filter((_, i) => i !== index));
+    if (window.confirm("Are you sure you want to delete this transaction?")) {
+      setTransactions((prev) => prev.filter((_, i) => i !== index));
+    }
   };
 
-  const updateTransaction = (index: number, updatedTransaction: Transaction) => {
-    setTransactions(
-      transactions.map((transaction, i) =>
-        i === index ? updatedTransaction : transaction
-      )
-    );
-    setEditingIndex(null); // Exit edit mode after update
-  };
+  const filteredTransactions = transactions.filter(
+    (t) =>
+      (filter === "all" || t.type === filter) &&
+      t.description.toLowerCase().includes(search.toLowerCase())
+  );
 
-  const totalIncome = transactions
-    .filter((transaction) => transaction.type === "income")
-    .reduce((total, item) => total + item.amount, 0);
-  const totalExpenses = transactions
-    .filter((transaction) => transaction.type === "expense")
-    .reduce((total, item) => total + item.amount, 0);
-  const profitLoss = totalIncome - totalExpenses;
+  const incomeTotal = transactions
+    .filter((t) => t.type === "income")
+    .reduce((sum, t) => sum + t.amount, 0);
+  const expenseTotal = transactions
+    .filter((t) => t.type === "expense")
+    .reduce((sum, t) => sum + t.amount, 0);
+  const profitLoss = incomeTotal - expenseTotal;
+
+  const chartData = {
+    labels: transactions.map((t) => t.date),
+    datasets: [
+      {
+        label: "Expenses",
+        data: transactions
+          .filter((t) => t.type === "expense")
+          .map((t) => t.amount),
+        backgroundColor: "#f87171",
+      },
+      {
+        label: "Income",
+        data: transactions
+          .filter((t) => t.type === "income")
+          .map((t) => t.amount),
+        borderColor: "#22c55e",
+        backgroundColor: "#22c55e",
+        fill: false,
+      },
+    ],
+  };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-gray-200 py-12 px-4">
-      <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-4xl">
-        <div className="flex justify-around gap-2">
-          <span className="text-3xl font-semibold mb-6 text-center pb-4">
-            Welcome {userData?.data?.user?.name || "User"}, start tracking your
-            money
+    <div className="p-4 bg-gray-900 text-white min-h-screen">
+      <h1 className="text-3xl font-bold mb-6 text-center">
+        Expense Tracker Dashboard
+      </h1>
+      <div className="bg-gray-700 p-4 rounded-lg mb-6 w-full max-w-lg mx-auto text-center">
+        <h2 className="text-xl font-medium">Summary</h2>
+        <p>
+          Total Income: <span className="text-green-400">${incomeTotal}</span>
+        </p>
+        <p>
+          Total Expenses: <span className="text-red-400">${expenseTotal}</span>
+        </p>
+        <p>
+          Profit/Loss:{" "}
+          <span className={profitLoss >= 0 ? "text-green-400" : "text-red-400"}>
+            ${profitLoss}
           </span>
-          <div className="flex justify-center">
-            <img
-              src={userData?.data?.user?.avatar || ""}
-              alt="User Avatar"
-              className="w-16 h-16 rounded-full border-gray-300 shadow-md"
-            />
-          </div>
-        </div>
+        </p>
+      </div>
 
-        <div className="mb-8 p-6 bg-gray-700 rounded-lg shadow-md">
-          <h2 className="text-2xl font-medium mb-4">
-            {editingIndex !== null ? "Edit Transaction" : "Add Transaction"}
-          </h2>
-          <Formik
-            initialValues={
-              editingIndex !== null
-                ? transactions[editingIndex]
-                : { type: "income", description: "", amount: 0 }
-            }
-            enableReinitialize
-            validationSchema={Yup.object({
-              description: Yup.string().required("Description is required"),
-              amount: Yup.number()
-                .min(1, "Amount must be greater than 0")
-                .required("Amount is required"),
-            })}
-            onSubmit={(values, { resetForm }) => {
-              if (editingIndex !== null) {
-                updateTransaction(editingIndex, values as Transaction);
-              } else {
-                addTransaction(values as Transaction);
-              }
-              resetForm();
-            }}
+      <Formik
+        initialValues={{
+          type: "income",
+          description: "",
+          amount: "",
+          date: "",
+        }}
+        validationSchema={Yup.object({
+          description: Yup.string().required("Description is required"),
+          amount: Yup.number()
+            .positive("Amount must be positive")
+            .required("Amount is required"),
+          date: Yup.string().required("Date is required"),
+        })}
+        onSubmit={(values, { resetForm }) => {
+          if (editingIndex !== null) {
+            updateTransaction(editingIndex, values as Transaction);
+          } else {
+            addTransaction(values as Transaction);
+          }
+          resetForm();
+        }}
+      >
+        {({ values, handleChange, handleSubmit }) => (
+          <Form
+            onSubmit={handleSubmit}
+            className="bg-gray-700 p-4 rounded-lg mb-6 w-full max-w-lg mx-auto"
           >
-            {({ isSubmitting }) => (
-              <Form>
-                <div className="mb-4">
-                  <label
-                    className="block text-gray-300 text-sm font-medium mb-2"
-                    htmlFor="type"
-                  >
-                    Type
-                  </label>
-                  <Field
-                    as="select"
-                    id="type"
-                    name="type"
-                    className="block w-full px-3 py-2 border border-gray-600 bg-gray-900 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="income">Income</option>
-                    <option value="expense">Expense</option>
-                  </Field>
-                </div>
-                <div className="mb-4">
-                  <label
-                    className="block text-gray-300 text-sm font-medium mb-2"
-                    htmlFor="description"
-                  >
-                    Description
-                  </label>
-                  <Field
-                    id="description"
-                    name="description"
-                    className="block w-full px-3 py-2 border border-gray-600 bg-gray-900 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    type="text"
-                  />
-                  <ErrorMessage
-                    name="description"
-                    component="div"
-                    className="text-red-500 text-xs italic mt-1"
-                  />
-                </div>
-                <div className="mb-6">
-                  <label
-                    className="block text-gray-300 text-sm font-medium mb-2"
-                    htmlFor="amount"
-                  >
-                    Amount
-                  </label>
-                  <Field
-                    id="amount"
-                    name="amount"
-                    className="block w-full px-3 py-2 border border-gray-600 bg-gray-900 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    type="number"
-                  />
-                  <ErrorMessage
-                    name="amount"
-                    component="div"
-                    className="text-red-500 text-xs italic mt-1"
-                  />
-                </div>
-                <button
-                  className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200"
-                  type="submit"
-                  disabled={isSubmitting}
-                >
-                  {editingIndex !== null ? "Update Transaction" : "Add Transaction"}
-                </button>
-              </Form>
-            )}
-          </Formik>
-        </div>
+            <h2 className="text-xl font-medium mb-4 text-center">
+              Add / Edit Transaction
+            </h2>
+            <div className="grid grid-cols-1 gap-4">
+              <select
+                name="type"
+                value={values.type}
+                onChange={handleChange}
+                className="p-2 bg-gray-900 rounded"
+              >
+                <option value="income">Income</option>
+                <option value="expense">Expense</option>
+              </select>
+              <input
+                type="text"
+                name="description"
+                placeholder="Description"
+                value={values.description}
+                onChange={handleChange}
+                className="p-2 bg-gray-900 rounded"
+              />
+              <input
+                type="number"
+                name="amount"
+                placeholder="Amount"
+                value={values.amount}
+                onChange={handleChange}
+                className="p-2 bg-gray-900 rounded"
+              />
+              <input
+                type="date"
+                name="date"
+                value={values.date}
+                onChange={handleChange}
+                className="p-2 bg-gray-900 rounded"
+              />
+              <button
+                type="submit"
+                className="bg-blue-600 p-2 rounded text-white"
+              >
+                {editingIndex !== null ? "Update" : "Add"}
+              </button>
+            </div>
+          </Form>
+        )}
+      </Formik>
 
-        <div className="mb-8 p-6 bg-gray-700 rounded-lg shadow-md">
-          <h2 className="text-2xl font-medium mb-4">Transaction List</h2>
-          <table className="w-full text-left bg-gray-800 rounded-md">
+      <div className="bg-gray-700 p-6 rounded-lg mb-6 flex-row w-full max-w-lg mx-auto">
+        <h2 className="text-xl font-medium mb-4 text-center">
+          Transaction Chart
+        </h2>
+        <Bar data={chartData} />
+      </div>
+
+      <div className="bg-gray-700 p-4 rounded-lg mb-6 w-full max-w-lg mx-auto">
+        <h2 className="text-xl font-medium mb-4 text-center">
+          Transaction List
+        </h2>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm">
             <thead>
-              <tr className="border-b border-gray-600">
-                <th className="px-4 py-2 text-gray-300">Type</th>
-                <th className="px-4 py-2 text-gray-300">Description</th>
-                <th className="px-4 py-2 text-gray-300">Amount</th>
-                <th className="px-4 py-2 text-gray-300">Actions</th>
+              <tr>
+                <th className="p-2">Date</th>
+                <th className="p-2">Type</th>
+                <th className="p-2">Description</th>
+                <th className="p-2">Amount</th>
+                <th className="p-2">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {transactions.length === 0 ? (
-                <tr>
+              {filteredTransactions.map((transaction, index) => (
+                <tr key={index} className="border-t border-gray-600">
+                  <td className="p-2">{transaction.date}</td>
+                  <td className="p-2 capitalize">{transaction.type}</td>
+                  <td className="p-2">{transaction.description}</td>
                   <td
-                    colSpan={4}
-                    className="text-center py-4 text-gray-400 italic"
+                    className={`p-2 ${
+                      transaction.type === "income"
+                        ? "text-green-400"
+                        : "text-red-400"
+                    }`}
                   >
-                    No transactions found.
+                    ${transaction.amount}
+                  </td>
+                  <td className="p-2">
+                    <button
+                      className="bg-blue-600 p-1 rounded mr-2"
+                      onClick={() => setEditingIndex(index)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="bg-red-600 p-1 rounded"
+                      onClick={() => removeTransaction(index)}
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
-              ) : (
-                transactions.map((transaction, index) => (
-                  <tr key={index} className="border-b border-gray-600">
-                    <td className="px-4 py-2">{transaction.type}</td>
-                    <td className="px-4 py-2">{transaction.description}</td>
-                    <td className="px-4 py-2">${transaction.amount}</td>
-                    <td className="px-4 py-2">
-                      <button
-                        className="text-blue-400 hover:underline mr-4"
-                        onClick={() => setEditingIndex(index)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="text-red-400 hover:underline"
-                        onClick={() => removeTransaction(index)}
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              )}
+              ))}
             </tbody>
           </table>
-        </div>
-
-        <div className="p-6 bg-gray-700 rounded-lg shadow-md text-center">
-          <h2 className="text-2xl font-medium mb-4">Summary</h2>
-          <div className="flex justify-between text-lg">
-            <p className="flex-1">
-              Total Income:{" "}
-              <span className="font-semibold">${totalIncome}</span>
-            </p>
-            <p className="flex-1">
-              Total Expenses:{" "}
-              <span className="font-semibold">${totalExpenses}</span>
-            </p>
-            <p className="flex-1">
-              Profit/Loss:{" "}
-              <span
-                className={`font-semibold ${
-                  profitLoss >= 0 ? "text-green-400" : "text-red-400"
-                }`}
-              >
-                ${profitLoss}
-              </span>
-            </p>
-          </div>
         </div>
       </div>
     </div>

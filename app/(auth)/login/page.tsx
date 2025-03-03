@@ -1,25 +1,28 @@
 "use client";
-import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { FcGoogle } from 'react-icons/fc';
-import { FaLinkedin, FaGithub } from 'react-icons/fa';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
-import axios from 'axios'
+import axios from "axios";
+import { ErrorMessage, Field, Form, Formik } from "formik";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { FaGithub, FaLinkedin } from "react-icons/fa";
+import { FcGoogle } from "react-icons/fc";
 
 const LoginPage = () => {
   const router = useRouter();
 
-  const handleSubmit =async (values: { email: string; password: string }) => {
+  const handleSubmit = async (values: { email: string; password: string }) => {
     try {
-      const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
-      
-     const response = await axios.post('https://lms-backend.sachetsubedi001.com.np/api/auth/login',values);
-    //  console.log(response.data);
+      const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
 
-    localStorage.setItem('userData',JSON.stringify(response.data))
+      //  const response = await axios.post('https://lms-backend.sachetsubedi001.com.np/api/auth/login',values);
+      const response = await axios.post(
+        "https://ecommerce-backend.kushalnepal.com.np/api/auth/login",
+        values
+      );
+      //  console.log(response.data);
 
-    router.push('/dashboard')
+      localStorage.setItem("userData", JSON.stringify(response.data));
 
+      router.push("/dashboard");
     } catch (error) {
       console.error(error);
     }
@@ -34,13 +37,16 @@ const LoginPage = () => {
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
         <h1 className="text-2xl font-semibold mb-6 text-center">Login</h1>
         <Formik
-          initialValues={{ email: '', password: '' }}
+          initialValues={{ email: "", password: "" }}
           onSubmit={handleSubmit}
         >
           {({ isSubmitting }) => (
             <Form>
               <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-medium mb-2" htmlFor="email">
+                <label
+                  className="block text-gray-700 text-sm font-medium mb-2"
+                  htmlFor="email"
+                >
                   Email
                 </label>
                 <Field
@@ -48,10 +54,17 @@ const LoginPage = () => {
                   type="email"
                   name="email"
                 />
-                <ErrorMessage className="text-red-500 text-xs italic mt-1" name="email" component="div" />
+                <ErrorMessage
+                  className="text-red-500 text-xs italic mt-1"
+                  name="email"
+                  component="div"
+                />
               </div>
               <div className="mb-6">
-                <label className="block text-gray-700 text-sm font-medium mb-2" htmlFor="password">
+                <label
+                  className="block text-gray-700 text-sm font-medium mb-2"
+                  htmlFor="password"
+                >
                   Password
                 </label>
                 <Field
@@ -59,7 +72,11 @@ const LoginPage = () => {
                   type="password"
                   name="password"
                 />
-                <ErrorMessage className="text-red-500 text-xs italic mt-1" name="password" component="div" />
+                <ErrorMessage
+                  className="text-red-500 text-xs italic mt-1"
+                  name="password"
+                  component="div"
+                />
               </div>
               <button
                 className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200"
@@ -72,24 +89,26 @@ const LoginPage = () => {
           )}
         </Formik>
         <div className="mt-8 text-center">
-          <h2 className="text-lg font-medium text-gray-600 mb-4">Or Sign in with</h2>
+          <h2 className="text-lg font-medium text-gray-600 mb-4">
+            Or Sign in with
+          </h2>
           <div className="flex justify-center space-x-6">
             <button
-              onClick={() => handleSocialLogin('google')}
+              onClick={() => handleSocialLogin("google")}
               className="text-gray-700 hover:text-gray-900"
               aria-label="Sign in with Google"
             >
               <FcGoogle className="text-4xl" />
             </button>
             <button
-              onClick={() => handleSocialLogin('linkedin')}
+              onClick={() => handleSocialLogin("linkedin")}
               className="text-gray-700 hover:text-gray-900"
               aria-label="Sign in with LinkedIn"
             >
               <FaLinkedin className="text-4xl" />
             </button>
             <button
-              onClick={() => handleSocialLogin('github')}
+              onClick={() => handleSocialLogin("github")}
               className="text-gray-700 hover:text-gray-900"
               aria-label="Sign in with GitHub"
             >
@@ -99,9 +118,9 @@ const LoginPage = () => {
         </div>
         <div className="mt-6 text-center">
           <p className="text-gray-600">
-            Don&apos;t have an account?{' '}
+            Don&apos;t have an account?{" "}
             <button
-              onClick={() => router.push('/signup')}
+              onClick={() => router.push("/signup")}
               className="text-blue-600 hover:text-blue-700 font-semibold"
             >
               Sign Up
