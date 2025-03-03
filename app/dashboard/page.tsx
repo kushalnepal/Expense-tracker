@@ -141,9 +141,15 @@ const Dashboard = () => {
         })}
         onSubmit={(values, { resetForm }) => {
           if (editingIndex !== null) {
-            updateTransaction(editingIndex, values as Transaction);
+            updateTransaction(editingIndex, {
+              ...values,
+              amount: Number(values.amount),
+            } as Transaction);
           } else {
-            addTransaction(values as Transaction);
+            addTransaction({
+              ...values,
+              amount: Number(values.amount),
+            } as Transaction);
           }
           resetForm();
         }}
