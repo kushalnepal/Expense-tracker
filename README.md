@@ -73,7 +73,7 @@ This is a Next.js-based Expense Tracker application with CRUD functionality for 
 
 
 4. **Start the application**:  
-   
+   Run both the frontend and backend servers.  
    - Frontend:  
      ```bash
      npm run dev
